@@ -2,8 +2,9 @@
   hosts: local
   connection: local
   vars:
-    instances: ["mongodb", "redis", "mysql", "rabbitmq"]
+    instances: ["mongodb", "redis", "mysql", "rabbitmq", "frontend"]
     image_id: ami-0220d79f3f480ecf5
+    domain_name: exptrack.shop
   tasks:
   - name: create ec2 instances
     amazon.aws.ec2_instance:
@@ -20,7 +21,30 @@
   #   debug:
   #     msg: "{{ ec2_output }}"
 
-  - name: create route53 record
-    debug:
-      msg: "Instance Name: {{ item.item }} Private IP: {{ item.instances[0].private_ip_address }}"
-    loop: "{{ ec2_output.results }}"
+  # - name: create route53 record
+  #   debug:
+  #     msg: "Instance Name: {{ item.item }} Private IP: {{ item.instances[0].private_ip_address }}"
+  #   loop: "{{ ec2_output.results }}"
+
+  - name: create route53 record 
+    amazon.aws.route53:
+      state: present                    #item contains all the instance details (the IP, the ID, the status, etc.).
+      zone: "{{ domain_name }}"         #item.item goes inside that data and grabs only the name field (like "mongodb" or "redis")
+      record: "{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}" 
+      overwrite: true
+    loop: "{{ ec2_output.results }}" 
+
+  - name: create route53 record for frontend
+    amazon.aws.route53:
+      state: present                    #item means: "The receipt I am holding right now."
+      zone: "{{ domain_name }}"         #item.item means: "Look inside the receipt I am holding, and find the original label text." (which will be "mongodb", "redis", etc.)
+      record: "{{ item.item }}.{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}" 
+      overwrite: true
+    loop: "{{ ec2_output.results }}" 
+    when: item.item == "frontend"
