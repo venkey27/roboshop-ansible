@@ -64,7 +64,7 @@
     loop: "{{ instances }}" # ec2_output.results is a list of all the instances that were created, and we are looping through that list to delete the route53 records for each instance.
     when: action == "delete"
 
-   - name: delete route53 record  for frontend  
+  - name: delete route53 record  for frontend  
     amazon.aws.route53:
       state: absent
       zone: "{{ domain_name }}"
