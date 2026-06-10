@@ -30,7 +30,7 @@
     amazon.aws.route53:
       state: present                    #item contains all the instance details (the IP, the ID, the status, etc.).
       zone: "{{ domain_name }}"         #item.item goes inside that data and grabs only the name field (like "mongodb" or "redis")
-      record: "{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
+      record: "{{ item.item }}.{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
       type: A
       ttl: 1
       value: "{{ item.instances[0].private_ip_address }}" 
@@ -41,10 +41,10 @@
     amazon.aws.route53:
       state: present                    #item means: "The receipt I am holding right now."
       zone: "{{ domain_name }}"         #item.item means: "Look inside the receipt I am holding, and find the original label text." (which will be "mongodb", "redis", etc.)
-      record: "{{ item.item }}.{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
+      record: "{{ domain_name }}" #item.item because we are looping through ec2_output.results and each item in that list has an attribute called item which contains the name of the instance
       type: A
       ttl: 1
       value: "{{ item.instances[0].public_ip_address }}" 
-      overwrite: true
     loop: "{{ ec2_output.results }}" 
     when: item.item == "frontend"
+
