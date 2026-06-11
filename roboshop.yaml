@@ -2,7 +2,7 @@
   hosts: local
   connection: local
   vars:
-    instances: ["mongodb", "redis", "mysql", "rabbitmq", "frontend"]
+    instances: ["mongodb", "redis", "mysql", "rabbitmq", "frontend", "cart", "catalogue", "user", "payment", "shipping"] # list of all the instances we want to create or delete. We can add or remove instances from this list as needed.
     image_id: ami-0220d79f3f480ecf5
     domain_name: exptrack.shop
     action: create # action variable to determine whether we want to create or delete the instances and route53 records. We can set it to "create" or "delete" when we run the playbook.
@@ -75,3 +75,11 @@
     when: 
       - action == "delete"
       - item == "frontend"
+
+
+  - name: delete ec2 instances
+    amazon.aws.ec2_instance:
+      state: absent
+      name: "roboshop-{{ item }}"
+    loop: "{{ instances }}"
+    when: action == "delete"
