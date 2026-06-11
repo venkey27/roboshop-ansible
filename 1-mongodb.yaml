@@ -1,0 +1,8 @@
+- name: configuring mongodb server
+  hosts: mongodb
+  become: true
+  tasks:
+    - name: copy mongodb repo file
+      copy:
+        src: mongo.repo  #src means mongo.repo file should be in the same location where this playbook is present
+        dest: /etc/yum.repos.d/mongo.repo
