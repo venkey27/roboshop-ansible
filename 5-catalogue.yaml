@@ -81,3 +81,15 @@
     when: catalogue_output.stdout | int < 0  #stdout stands for Standard Output. # | pipe to convert srting to int and then compare to stdout 
     tags: 
     - mongodb
+
+  - name: demon reload catalogue
+    systemd_service:
+      name: catalogue
+      deamon_reload: true
+    when: unit_file.change
+
+  - name: enable and start catalogue
+    service:
+      name: catalogue
+      state: restarted
+      enabled: yes
