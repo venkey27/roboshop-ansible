@@ -74,3 +74,8 @@
     tags: 
     - mongodb
     
+  - name: load products 
+    shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js
+    when: catalogue_output.stdout | int < 0  #stdout stands for Standard Output. # | pipe to convert srting to int and then compare to stdout 
+    tags: 
+    - mongodb
