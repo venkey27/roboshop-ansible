@@ -23,9 +23,9 @@
         path: /app
         state: absent
     
-    - name: delete user.zip in /tmp
+    - name: delete cart.zip in /tmp
       file:
-        path: /tmp/user.zip
+        path: /tmp/cart.zip
         state: absent
 
     - name: create app directory
@@ -33,14 +33,14 @@
         path: /app
         state: directory
 
-    - name: download user
+    - name: download cart
       get_url:
-        url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip 
-        dest: /tmp/user.zip 
+        url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip 
+        dest: /tmp/cart.zip 
 
-    - name: unzip user
+    - name: unzip cart
       unarchive:
-        src: /tmp/user.zip
+        src: /tmp/cart.zip
         dest: /app
         remote_src: yes
 
@@ -48,18 +48,18 @@
       community.general.npm:
         path: /app
 
-    - name: copy user service 
+    - name: copy cart service 
       template:
-        src: user.service.j2
+        src: cart.service.j2
         dest: /etc/systemd/system/user.service
 
     - name: demon reload user
       systemd_service:
-        name: user
+        name: cart
         daemon_reload: true
 
     - name: enable and restart
       service:
-        name: user
+        name: cart
         state: restarted 
         enabled: yes
