@@ -1,5 +1,5 @@
 - name: configurating cart server
-  hosts: user
+  hosts: cart
   become: yes
   tasks: 
     - name: enable 
