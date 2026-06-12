@@ -62,6 +62,8 @@
     package:
       name: mongodb-mongosh
       state: present
+    tags: 
+    - mongodb
 
   - name: check catalogue scheme exist or not
     shell: mongosh --host "{{ MONGODB_HOST }}" --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
