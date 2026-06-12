@@ -80,7 +80,7 @@
   - name: demon reload catalogue
     systemd_service:
       name: catalogue
-      deamon_reload: true
+      daemon_reload: true
     
   - name: enable and start catalogue
     service:
