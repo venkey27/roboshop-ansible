@@ -1,5 +1,5 @@
 - name: configuring catalogue server
-  hosts: redis
+  hosts: catalogue
   become: yes
   tasks:
   - name: enable nodejs 20
