@@ -2,64 +2,64 @@
   hosts: cart
   become: yes
   tasks: 
-    - name: enable 
-      command: "dnf module enable nodejs:20 -y"
+  - name: enable 
+    command: "dnf module enable nodejs:20 -y"
 
-    - name: install nodejs 
-      package: 
-        name: nodejs 
-        state: present
+  - name: install nodejs 
+    package: 
+      name: nodejs 
+      state: present
 
-    - name: create roboshop system user 
-      user:
-        name: roboshop
-        system: true
-        home: /app
-        shell : /sbin/nologin
-        comment: "roboshop system user"
+  - name: create roboshop system user 
+    user:
+      name: roboshop
+      system: true
+      home: /app
+      shell : /sbin/nologin
+      comment: "roboshop system user" 
 
-    - name: remove /app directory
-      file:
-        path: /app
-        state: absent
+  - name: remove /app directory
+    file:
+      path: /app
+      state: absent
     
-    - name: delete cart.zip in /tmp
-      file:
-        path: /tmp/cart.zip
-        state: absent
+  - name: delete cart.zip in /tmp
+    file:
+      path: /tmp/cart.zip
+      state: absent
 
-    - name: create app directory
-      file:
+  - name: create app directory
+    file:
+      path: /app
+      state: directory
+
+  - name: download cart
+    get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip 
+      dest: /tmp/cart.zip 
+
+  - name: unzip cart
+    unarchive:
+      src: /tmp/cart.zip
+      dest: /app
+      remote_src: yes
+
+  - name: npm install dependencies
+    community.general.npm:
         path: /app
-        state: directory
 
-    - name: download cart
-      get_url:
-        url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip 
-        dest: /tmp/cart.zip 
+  - name: copy cart service 
+    template:
+      src: cart.service.j2
+      dest: /etc/systemd/system/user.service
 
-    - name: unzip cart
-      unarchive:
-        src: /tmp/cart.zip
-        dest: /app
-        remote_src: yes
+  - name: demon reload user
+    systemd_service:
+      name: cart
+      daemon_reload: true
 
-    - name: npm install dependencies
-      community.general.npm:
-        path: /app
-
-    - name: copy cart service 
-      template:
-        src: cart.service.j2
-        dest: /etc/systemd/system/user.service
-
-    - name: demon reload user
-      systemd_service:
-        name: cart
-        daemon_reload: true
-
-    - name: enable and restart
-      service:
-        name: cart
-        state: restarted 
-        enabled: yes
+  - name: enable and restart
+    service:
+      name: cart
+      state: restarted 
+      enabled: yes  
