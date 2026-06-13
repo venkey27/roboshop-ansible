@@ -62,7 +62,7 @@
   - name: install python dependencies
     pip:
       name: PyMySQL
-      excutable: pip3.9
+      executable: pip3.9
 
   - name: load mysql data
     community.mysql.mysql_db:
