@@ -76,3 +76,14 @@
     - /app/db/schema.sql
     - /app/db/app-user.sql 
     - /app/db/master-data.sql
+
+  - name: demon reload shipping
+    systemd_service:
+      name: shipping
+      daemon_reload: true
+    
+  - name: enable and start shipping
+    service:
+      name: shipping
+      state: restarted
+      enabled: yes
